@@ -1,0 +1,1 @@
+trtexec --onnx=Models/OnnxModel.onnx --saveEngine=Models/TensorRTModel.trt
