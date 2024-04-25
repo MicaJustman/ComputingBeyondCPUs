@@ -30,6 +30,9 @@ PytorchModel.eval()
 #Onnx
 OnnxModel = ort.InferenceSession("Models/OnnxModel.onnx", providers=['CUDAExecutionProvider'])
 
+#ONNX with tensorRT
+tensorRTModel = ort.InferenceSession("Models/OnnxModel.onnx", providers = ["TensorrtExecutionProvider", "CUDAExecutionProvider"])
+
 
 print('GPU testing\n')
 #Test Pytorch Model
@@ -78,6 +81,30 @@ end_time = time.time()
 
 accuracy = 100 * correct / total  # Calculate accuracy
 print(f"Accuracy on the Both set by the OnnxModel: {accuracy:.2f}%")
+print("Time completed: " + str(end_time - start_time))
+
+#Test TensorRT Model
+
+correct = 0
+total = 0
+preloaded_images = []
+preloaded_labels = []
+
+for images, labels in Both_loader:
+    preloaded_images.append(images.cpu().numpy())
+    preloaded_labels.append(labels.cpu())
+
+start_time = time.time()
+for images, labels in zip(preloaded_images, preloaded_labels):
+    input_name = tensorRTModel.get_inputs()[0].name
+    outputs = tensorRTModel.run(None, {input_name: images})
+    predicted = np.argmax(outputs[0], axis=1)
+    total += labels.size(0)  # Total samples
+    correct += np.sum(predicted == labels.numpy())
+end_time = time.time()
+
+accuracy = 100 * correct / total  # Calculate accuracy
+print(f"Accuracy on the Both set by the TensorRT: {accuracy:.2f}%")
 print("Time completed: " + str(end_time - start_time))
 
 
