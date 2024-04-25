@@ -13,7 +13,7 @@ model.eval()
 model.to(device)
 
 # Input to the model
-x = torch.randn(32, 3, 80, 80, requires_grad=True)
+x = torch.randn(375, 3, 80, 80, requires_grad=True)
 x = x.to(device)
 torch_out = model(x)
 

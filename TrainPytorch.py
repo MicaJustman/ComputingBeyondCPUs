@@ -6,7 +6,7 @@ import torchvision
 from torch.utils.data import DataLoader
 
 learning_rate = 1e-3
-batch_size = 32
+batch_size = 375
 num_epochs = 18
 
 print(torch.__version__)
