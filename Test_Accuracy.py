@@ -59,7 +59,7 @@ with torch.no_grad():
         correct += (predicted == labels).sum().item()
 end_time = time.time()
 accuracy = 100 * correct / total
-print(f"Accuracy on the Both set by the PytorchModel: {accuracy:.2f}%")
+print(f"Accuracy on the Both set by the PytorchModel: {accuracy:.6f}%")
 print("Time completed: " + str(end_time - start_time))
 
 #Test Onnx Model
@@ -83,7 +83,7 @@ for images, labels in zip(preloaded_images, preloaded_labels):
 end_time = time.time()
 
 accuracy = 100 * correct / total  # Calculate accuracy
-print(f"Accuracy on the Both set by the OnnxModel: {accuracy:.2f}%")
+print(f"Accuracy on the Both set by the OnnxModel: {accuracy:.6f}%")
 print("Time completed: " + str(end_time - start_time))
 
 #Test TensorRT Model
@@ -134,11 +134,9 @@ for images, labels in zip(preloaded_images, preloaded_labels):
     correct += np.sum(predicted == labels.numpy())
 end_time = time.time()
 
-
 accuracy = (correct / total) * 100  # Accuracy in percentage
-print(f"Accuracy on the dataset with TensorRT model: {accuracy:.2f}%")
+print(f"Accuracy on the dataset with TensorRT model: {accuracy:.6f}%")
 print("Time completed: " + str(end_time - start_time))
-print(total)
 
 
 print('\nCPU Testing\n')
@@ -172,7 +170,7 @@ with torch.no_grad():
         correct += (predicted == labels).sum().item()
 end_time = time.time()
 accuracy = 100 * correct / total
-print(f"Accuracy on the Both set by the PytorchModel: {accuracy:.2f}%")
+print(f"Accuracy on the Both set by the PytorchModel: {accuracy:.6f}%")
 print("Time completed: " + str(end_time - start_time))
 
 #Test Onnx Model
@@ -196,5 +194,5 @@ for images, labels in zip(preloaded_images, preloaded_labels):
 end_time = time.time()
 
 accuracy = 100 * correct / total  # Calculate accuracy
-print(f"Accuracy on the Both set by the OnnxModel: {accuracy:.2f}%")
+print(f"Accuracy on the Both set by the OnnxModel: {accuracy:.6f}%")
 print("Time completed: " + str(end_time - start_time))
