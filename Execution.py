@@ -10,7 +10,7 @@ import tensorrt as trt
 import pycuda.driver as cuda
 import pycuda.autoinit
 
-batch_size = 375
+batch_size = 1
 
 #print(torch.__version__)
 #print(torch.cuda.is_available())
@@ -52,11 +52,12 @@ for images, labels in Both_loader:
 
 start_time = time.time()
 with torch.no_grad():
-    for images, labels in zip(preloaded_images, preloaded_labels):
-        outputs = PytorchModel(images)
-        _, predicted = torch.max(outputs, 1)
-        total += labels.size(0)
-        correct += (predicted == labels).sum().item()
+    images = preloaded_images[0]
+    labels = preloaded_labels[0]
+    outputs = PytorchModel(images)
+    _, predicted = torch.max(outputs, 1)
+    total += labels.size(0)
+    correct += (predicted == labels).sum().item()
 end_time = time.time()
 accuracy = 100 * correct / total
 print(f"Accuracy on the Both set by the PytorchModel: {accuracy:.6f}%")
@@ -74,12 +75,13 @@ for images, labels in Both_loader:
     preloaded_labels.append(labels.cpu())
 
 start_time = time.time()
-for images, labels in zip(preloaded_images, preloaded_labels):
-    input_name = OnnxModel.get_inputs()[0].name
-    outputs = OnnxModel.run(None, {input_name: images})
-    predicted = np.argmax(outputs[0], axis=1)
-    total += labels.size(0)  # Total samples
-    correct += np.sum(predicted == labels.numpy())
+images = preloaded_images[0]
+labels = preloaded_labels[0]
+input_name = OnnxModel.get_inputs()[0].name
+outputs = OnnxModel.run(None, {input_name: images})
+predicted = np.argmax(outputs[0], axis=1)
+total += labels.size(0)  # Total samples
+correct += np.sum(predicted == labels.numpy())
 end_time = time.time()
 
 accuracy = 100 * correct / total  # Calculate accuracy
@@ -98,8 +100,8 @@ with open("Models/TensorRTModel.trt", "rb") as f:
 context = engine.create_execution_context()
 
 # Step 3: Allocate memory for input and output on CUDA device
-input_shape = (375, 3, 80, 80)  # Adjust this to match your model's input shape
-output_shape = (375, 1000)  # Adjust based on your model's output shape
+input_shape = (1, 3, 80, 80)  # Adjust this to match your model's input shape
+output_shape = (1, 1000)  # Adjust based on your model's output shape
 
 # Calculate the total number of elements
 total_elements = np.prod(input_shape)
@@ -123,15 +125,16 @@ h_output = np.zeros(output_shape, dtype=np.float32)  # Output tensor
 results = []
 
 start_time = time.time()
-for images, labels in zip(preloaded_images, preloaded_labels):
-    h_input = images
-    cuda.memcpy_htod(d_input, h_input)
-    context.execute_v2([int(d_input), int(d_output)])
-    # Transfer output data from device to host
-    cuda.memcpy_dtoh(h_output, d_output)
-    predicted = np.argmax(h_output, axis=1)  # Get the class with the highest score
-    total += labels.size(0)  # Total samples
-    correct += np.sum(predicted == labels.numpy())
+images = preloaded_images[0]
+labels = preloaded_labels[0]
+h_input = images
+cuda.memcpy_htod(d_input, h_input)
+context.execute_v2([int(d_input), int(d_output)])
+# Transfer output data from device to host
+cuda.memcpy_dtoh(h_output, d_output)
+predicted = np.argmax(h_output, axis=1)  # Get the class with the highest score
+total += labels.size(0)  # Total samples
+correct += np.sum(predicted == labels.numpy())
 end_time = time.time()
 
 d_input.free()
@@ -166,11 +169,12 @@ for images, labels in Both_loader:
 
 start_time = time.time()
 with torch.no_grad():
-    for images, labels in zip(preloaded_images, preloaded_labels):
-        outputs = PytorchModel(images)
-        _, predicted = torch.max(outputs, 1)
-        total += labels.size(0)
-        correct += (predicted == labels).sum().item()
+    images = preloaded_images[0]
+    labels = preloaded_labels[0]
+    outputs = PytorchModel(images)
+    _, predicted = torch.max(outputs, 1)
+    total += labels.size(0)
+    correct += (predicted == labels).sum().item()
 end_time = time.time()
 accuracy = 100 * correct / total
 print(f"Accuracy on the Both set by the PytorchModel: {accuracy:.6f}%")
@@ -188,12 +192,13 @@ for images, labels in Both_loader:
     preloaded_labels.append(labels.cpu())
 
 start_time = time.time()
-for images, labels in zip(preloaded_images, preloaded_labels):
-    input_name = OnnxModel.get_inputs()[0].name
-    outputs = OnnxModel.run(None, {input_name: images})
-    predicted = np.argmax(outputs[0], axis=1)
-    total += labels.size(0)  # Total samples
-    correct += np.sum(predicted == labels.numpy())
+images = preloaded_images[0]
+labels = preloaded_labels[0]
+input_name = OnnxModel.get_inputs()[0].name
+outputs = OnnxModel.run(None, {input_name: images})
+predicted = np.argmax(outputs[0], axis=1)
+total += labels.size(0)  # Total samples
+correct += np.sum(predicted == labels.numpy())
 end_time = time.time()
 
 accuracy = 100 * correct / total  # Calculate accuracy
